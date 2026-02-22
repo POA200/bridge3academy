@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +28,32 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="border-b bg-white">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+            <Link href="/" className="text-sm font-semibold">
+              Bridge3Academy Admin
+            </Link>
+
+            <nav className="flex items-center gap-2 text-sm">
+              <Link href="/" className="rounded-md px-3 py-2 hover:bg-gray-100">
+                Home
+              </Link>
+              <Link
+                href="/waitlist"
+                className="rounded-md px-3 py-2 hover:bg-gray-100"
+              >
+                Waitlist
+              </Link>
+              <Link
+                href="/tasks"
+                className="rounded-md px-3 py-2 hover:bg-gray-100"
+              >
+                Tasks
+              </Link>
+            </nav>
+          </div>
+        </header>
+
         {children}
       </body>
     </html>
