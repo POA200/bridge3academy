@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/db";
 import { DeleteUserButton } from "../../components/delete-user-button";
 
+export const dynamic = "force-dynamic";
+
 async function deleteWaitlistUser(formData: FormData) {
   "use server";
 
