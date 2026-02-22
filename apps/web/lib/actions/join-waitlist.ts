@@ -55,14 +55,15 @@ export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
     throw new Error("Please provide a valid email address.");
   }
 
-  const tasks = normalized.completedTaskIds.length
+  const tasks: Array<{ id: string; points: number }> =
+    normalized.completedTaskIds.length
     ? await prisma.task.findMany({
         where: { id: { in: normalized.completedTaskIds }, active: true },
         select: { id: true, points: true },
       })
     : [];
 
-  const verifiedTaskIds = tasks.map((task) => task.id);
+  const verifiedTaskIds = tasks.map((task: { id: string }) => task.id);
 
   const result = await prisma.$transaction(async (transaction) => {
     const waitlistUser = await transaction.waitlistUser.upsert({
