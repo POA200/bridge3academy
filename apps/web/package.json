@@ -11,6 +11,8 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@repo/db": "*",
     "@repo/ui": "*",
     "lucide-react": "^0.575.0",
     "next": "16.1.5",

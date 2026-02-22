@@ -4,11 +4,24 @@ import { Features } from "../../components/sections/features";
 import { Hero } from "../../components/sections/hero";
 import { HowItWorks } from "../../components/sections/how-it-works";
 import { Tracks } from "../../components/sections/tracks";
+import { prisma } from "@repo/db";
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const tasks = await prisma.task.findMany({
+    where: { active: true },
+    select: {
+      id: true,
+      title: true,
+      points: true,
+      type: true,
+      link: true,
+    },
+    orderBy: [{ points: "desc" }, { createdAt: "asc" }],
+  });
+
   return (
     <main>
-      <Hero />
+      <Hero tasks={tasks} />
       <HowItWorks />
       <Features />
       <Tracks />

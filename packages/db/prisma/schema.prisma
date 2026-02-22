@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WaitlistUser {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  tasks     UserTask[]
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  title     String
+  points    Int
+  type      String
+  link      String?   // 👈 add this (social link)
+  active    Boolean   @default(true) // 👈 allow disable
+  createdAt DateTime  @default(now())
+
+  users     UserTask[]
+}
+
+model UserTask {
+  id        String   @id @default(uuid())
+  userId    String
+  taskId    String
+  completed Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user WaitlistUser @relation(fields: [userId], references: [id])
+  task Task         @relation(fields: [taskId], references: [id])
+
+  @@unique([userId, taskId])
+}

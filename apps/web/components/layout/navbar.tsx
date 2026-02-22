@@ -79,7 +79,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 p-5">
-      <nav className="flex w-full items-center justify-between rounded-xl border-2 border-border bg-foreground/4 px-4 py-3 backdrop-blur-md md:px-6">
+      <nav className="flex w-full items-center justify-between rounded-xl border-2 border-border bg-foreground/4 px-4 md:px-12 py-3 backdrop-blur-md md:px-6">
         <Link
           href="/"
           className="flex items-center gap-3"
@@ -93,14 +93,14 @@ export function Navbar() {
             priority
           />
           <span className="leading-tight">
-            <span className="block text-base font-semibold text-foreground">
+            <span className="block text-base font-regular text-foreground">
               Bridge<span className="text-primary">3</span>
             </span>
             <span className="block text-sm text-foreground">Academy</span>
           </span>
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 md:flex font-regular">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className={navLinkClass}>
               {link.label}
@@ -112,7 +112,7 @@ export function Navbar() {
           <Button asChild variant="link">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild>
+          <Button asChild size={"lg"}>
             <Link href="/waitlist" className="inline-flex items-center">
               Join Waitlist
               <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
@@ -161,18 +161,32 @@ export function Navbar() {
         >
           <div>
             <div className="mb-8 flex items-center justify-between">
-              <span className="text-lg font-semibold text-foreground">
-                Menu
+              <span className="flex items-center gap-3">
+                <Image
+                  src="/bridge3academy logo.png"
+                  alt="Bridge3Academy logo"
+                  width={20}
+                  height={20}
+                  priority
+                />
+                <span className="leading-tight">
+                  <span className="block text-base font-regular text-foreground">
+                    Bridge<span className="text-primary">3</span>
+                  </span>
+                  <span className="block text-sm text-foreground">Academy</span>
+                </span>
               </span>
-              <button
+              <Button
                 ref={closeButtonRef}
                 type="button"
-                className="rounded-md p-2 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="border-none"
+                variant={"outline"}
+                size={"icon"}
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close navigation menu"
               >
                 <X className="h-5 w-5" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-col gap-6 text-lg">
@@ -196,9 +210,10 @@ export function Navbar() {
                 Login
               </Link>
             </Button>
-            <Button asChild className="w-full">
+            <Button asChild className="w-full" size={"lg"}>
               <Link href="/waitlist" onClick={() => setIsMobileMenuOpen(false)}>
                 Join Waitlist
+                <ChevronRight className="ml-1 h-5 w-5" aria-hidden="true" />
               </Link>
             </Button>
           </div>
