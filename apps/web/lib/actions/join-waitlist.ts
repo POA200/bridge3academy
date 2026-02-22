@@ -65,7 +65,8 @@ export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
 
   const verifiedTaskIds = tasks.map((task: { id: string }) => task.id);
 
-  const result = await prisma.$transaction(async (transaction) => {
+  const result = await prisma.$transaction(
+    async (transaction: any) => {
     const waitlistUser = await transaction.waitlistUser.upsert({
       where: { email: normalized.email },
       update: { name: normalized.name },
@@ -109,7 +110,8 @@ export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
       score: totalScore,
       completedTaskCount: verifiedTaskIds.length,
     };
-  });
+    },
+  );
 
   return { success: true, ...result };
 }
