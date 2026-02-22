@@ -30,12 +30,12 @@ type WaitlistModalProps = {
 
 export function WaitlistModal({ tasks }: WaitlistModalProps) {
   const [open, setOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
   const [openedTaskIds, setOpenedTaskIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const scoreById = useMemo(
@@ -104,7 +104,8 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
         email: normalizedEmail,
         completedTaskIds,
       });
-      setIsSuccess(true);
+      setOpen(false);
+      setSuccessOpen(true);
     } catch {
       setError("Submission failed. Please try again.");
     } finally {
@@ -114,92 +115,78 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
 
   const resetState = () => {
     setOpen(false);
+    setSuccessOpen(false);
     setName("");
     setEmail("");
     setCompletedTaskIds([]);
     setOpenedTaskIds([]);
     setError(null);
-    setIsSuccess(false);
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen && isSubmitting) {
-          return;
-        }
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && isSubmitting) {
+            return;
+          }
 
-        if (nextOpen && !canOpenModal) {
-          return;
-        }
+          if (nextOpen && !canOpenModal) {
+            return;
+          }
 
-        setOpen(nextOpen);
+          setOpen(nextOpen);
 
-        if (!nextOpen) {
-          setError(null);
-          setIsSuccess(false);
-        }
-      }}
-    >
-      <div className="space-y-2">
-        <Input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          disabled={isSubmitting}
-          className="w-full rounded-md bg-foreground/10 px-4 py-6"
-        />
-        <Input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          disabled={isSubmitting}
-          className="w-full rounded-md bg-foreground/10 px-4 py-6"
-        />
+          if (!nextOpen) {
+            setError(null);
+          }
+        }}
+      >
+        <div className="space-y-2">
+          <Input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            disabled={isSubmitting}
+            className="w-full rounded-md bg-foreground/10 px-4 py-6"
+          />
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            disabled={isSubmitting}
+            className="w-full rounded-md bg-foreground/10 px-4 py-6"
+          />
 
-        <DialogTrigger asChild>
-          <Button
-            variant="default"
-            size="lg"
-            className="mt-1 w-full py-6 font-medium"
-            disabled={!canOpenModal}
-          >
-            Join Early Access
-            <ChevronRight className="ml-1 h-5 w-5" />
-          </Button>
-        </DialogTrigger>
-      </div>
-
-      <DialogContent className="h-[85vh] max-h-[85vh] overflow-hidden border-border/60 p-0 flex flex-col">
-        <div className="border-b border-border/60 px-6 pt-6 pb-4">
-          <DialogHeader>
-            <DialogTitle>Early Access Waitlist</DialogTitle>
-            <DialogDescription>
-              Complete verified tasks to boost your priority score.
-            </DialogDescription>
-          </DialogHeader>
+          <DialogTrigger asChild>
+            <Button
+              variant="default"
+              size="lg"
+              className="mt-1 w-full py-6 font-medium"
+              disabled={!canOpenModal}
+            >
+              Join Early Access
+              <ChevronRight className="ml-1 h-5 w-5" />
+            </Button>
+          </DialogTrigger>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col px-6 py-4">
-          {isSuccess ? (
-            <div className="space-y-4 rounded-lg border border-primary/30 bg-primary/10 backdrop-blur-lg p-4 text-center">
-              <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
-              <p className="text-lg font-semibold text-foreground">
-                You&apos;re on the waitlist 🎉
-              </p>
-              <p className="text-sm text-muted-foreground">
-                We&apos;ll contact you soon with next steps.
-              </p>
-              <Button onClick={resetState} className="w-full">
-                Close
-              </Button>
-            </div>
-          ) : (
+        <DialogContent className="flex h-[85vh] max-h-[85vh] flex-col overflow-hidden border-border/60 p-0">
+          <div className="border-b border-border/60 px-6 pt-6 pb-4">
+            <DialogHeader>
+              <DialogTitle>Early Access Waitlist</DialogTitle>
+              <DialogDescription>
+                Complete verified tasks to boost your priority score.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col px-6 py-4">
             <form
               onSubmit={handleSubmit}
               className="flex min-h-0 flex-1 flex-col gap-4"
@@ -215,11 +202,11 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
 
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                 <p className="text-base font-semibold text-foreground">
-                  Congratulations {trimmedName || "there"} 🎉
+                  You&apos;re almost done, {trimmedName || "there"}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  You have been added to the waitlist. Complete verified tasks
-                  to boost your priority score.
+                  Submit your verified tasks to confirm your place and improve
+                  your position on the waitlist.
                 </p>
               </div>
 
@@ -271,9 +258,38 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
                 )}
               </Button>
             </form>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={successOpen}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            resetState();
+            return;
+          }
+
+          setSuccessOpen(nextOpen);
+        }}
+      >
+        <DialogContent className="border-border/60 p-6 sm:max-w-md">
+          <DialogHeader className="text-center">
+            <CheckCircle2 className="mx-auto mb-2 h-12 w-12 text-primary" />
+            <DialogTitle>You&apos;re on the waitlist</DialogTitle>
+            <DialogDescription>
+              Thank you for joining, {trimmedName || "there"}. We&apos;ll be in
+              touch soon with your early access update.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-6">
+            <Button onClick={resetState} className="w-full" size="lg">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
