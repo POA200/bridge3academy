@@ -1,6 +1,16 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/db";
 
+type AdminTask = {
+  id: string;
+  title: string;
+  points: number;
+  type: string;
+  link: string | null;
+  active: boolean;
+  createdAt: Date;
+};
+
 function parseTaskLink(value: string) {
   const trimmed = value.trim();
 
@@ -97,7 +107,7 @@ async function disableTask(formData: FormData) {
 }
 
 export default async function TasksPage() {
-  let tasks: Awaited<ReturnType<typeof prisma.task.findMany>> = [];
+  let tasks: AdminTask[] = [];
   let dbErrorMessage: string | null = null;
 
   try {
@@ -171,7 +181,7 @@ export default async function TasksPage() {
             No tasks found.
           </p>
         ) : (
-          tasks.map((task) => (
+          tasks.map((task: AdminTask) => (
             <div key={task.id} className="rounded-lg border p-4">
               <form action={updateTask} className="grid gap-3 md:grid-cols-2">
                 <input type="hidden" name="taskId" value={task.id} />
