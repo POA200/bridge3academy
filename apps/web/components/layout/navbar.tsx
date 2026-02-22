@@ -221,7 +221,7 @@ export function Navbar({ tasks }: NavbarProps) {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 bottom-0">
             <Button asChild variant="link" className="w-full justify-center">
               <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 Login
@@ -232,7 +232,7 @@ export function Navbar({ tasks }: NavbarProps) {
               mode="navbar"
               trigger={
                 <Button
-                  className="w-full"
+                  className="w-full p-8"
                   size={"lg"}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
