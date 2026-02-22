@@ -5,6 +5,15 @@ import { ChevronRight, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { WaitlistModal } from "@/components/sections/waitlist-modal";
+
+type WaitlistTask = {
+  id: string;
+  title: string;
+  points: number;
+  type: string;
+  link: string | null;
+};
 
 const navLinks = [
   { label: "How it works", href: "/#how-it-works" },
@@ -17,7 +26,11 @@ const navLinks = [
 const navLinkClass =
   "text-foreground transition-colors hover:text-primary focus-visible:text-primary focus-visible:outline-none";
 
-export function Navbar() {
+type NavbarProps = {
+  tasks: WaitlistTask[];
+};
+
+export function Navbar({ tasks }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -112,12 +125,16 @@ export function Navbar() {
           <Button asChild variant="link">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild size={"lg"}>
-            <Link href="/waitlist" className="inline-flex items-center">
-              Join Waitlist
-              <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          <WaitlistModal
+            tasks={tasks}
+            mode="navbar"
+            trigger={
+              <Button size={"lg"} className="inline-flex items-center">
+                Join Early Access
+                <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
+              </Button>
+            }
+          />
         </div>
 
         <button
@@ -210,12 +227,20 @@ export function Navbar() {
                 Login
               </Link>
             </Button>
-            <Button asChild className="w-full" size={"lg"}>
-              <Link href="/waitlist" onClick={() => setIsMobileMenuOpen(false)}>
-                Join Waitlist
-                <ChevronRight className="ml-1 h-5 w-5" aria-hidden="true" />
-              </Link>
-            </Button>
+            <WaitlistModal
+              tasks={tasks}
+              mode="navbar"
+              trigger={
+                <Button
+                  className="w-full"
+                  size={"lg"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Join Early Access
+                  <ChevronRight className="ml-1 h-5 w-5" aria-hidden="true" />
+                </Button>
+              }
+            />
           </div>
         </div>
       </div>

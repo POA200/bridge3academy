@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import {
   Button,
@@ -26,10 +27,79 @@ type WaitlistTask = {
 
 type WaitlistModalProps = {
   tasks: WaitlistTask[];
+  mode?: "inline" | "navbar";
+  trigger?: ReactNode;
 };
 
-export function WaitlistModal({ tasks }: WaitlistModalProps) {
-  const [open, setOpen] = useState(false);
+type WaitlistCaptureFieldsProps = {
+  name: string;
+  email: string;
+  error: string | null;
+  disabled: boolean;
+  canContinue: boolean;
+  onNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  showError: boolean;
+};
+
+function WaitlistCaptureFields({
+  name,
+  email,
+  error,
+  disabled,
+  canContinue,
+  onNameChange,
+  onEmailChange,
+  showError,
+}: WaitlistCaptureFieldsProps) {
+  return (
+    <div className="space-y-2">
+      <Input
+        type="text"
+        name="name"
+        placeholder="Full Name"
+        value={name}
+        onChange={(event) => onNameChange(event.target.value)}
+        disabled={disabled}
+        className="w-full rounded-md bg-foreground/10 px-4 py-6"
+      />
+      <Input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={email}
+        onChange={(event) => onEmailChange(event.target.value)}
+        disabled={disabled}
+        className="w-full rounded-md bg-foreground/10 px-4 py-6"
+      />
+
+      {showError && error ? (
+        <p className="text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      ) : null}
+
+      <Button
+        type="submit"
+        variant="default"
+        size="lg"
+        className="mt-1 w-full py-6 font-medium"
+        disabled={!canContinue || disabled}
+      >
+        Join Early Access
+        <ChevronRight className="ml-1 h-5 w-5" />
+      </Button>
+    </div>
+  );
+}
+
+export function WaitlistModal({
+  tasks,
+  mode = "inline",
+  trigger,
+}: WaitlistModalProps) {
+  const [captureOpen, setCaptureOpen] = useState(false);
+  const [tasksOpen, setTasksOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,6 +127,29 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
   const canOpenModal =
     trimmedName.length >= 2 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+
+  const proceedToTasks = (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    setError(null);
+
+    if (trimmedName.length < 2) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+
+    if (!validEmail) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (mode === "navbar") {
+      setCaptureOpen(false);
+    }
+
+    setTasksOpen(true);
+  };
 
   const toggleTask = (taskId: string) => {
     setCompletedTaskIds((currentTaskIds) =>
@@ -104,7 +197,7 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
         email: normalizedEmail,
         completedTaskIds,
       });
-      setOpen(false);
+      setTasksOpen(false);
       setSuccessOpen(true);
     } catch {
       setError("Submission failed. Please try again.");
@@ -114,7 +207,8 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
   };
 
   const resetState = () => {
-    setOpen(false);
+    setCaptureOpen(false);
+    setTasksOpen(false);
     setSuccessOpen(false);
     setName("");
     setEmail("");
@@ -125,57 +219,81 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
 
   return (
     <>
+      {mode === "inline" ? (
+        <form onSubmit={proceedToTasks}>
+          <WaitlistCaptureFields
+            name={name}
+            email={email}
+            error={error}
+            disabled={isSubmitting}
+            canContinue={canOpenModal}
+            onNameChange={setName}
+            onEmailChange={setEmail}
+            showError={false}
+          />
+        </form>
+      ) : (
+        <Dialog
+          open={captureOpen}
+          onOpenChange={(nextOpen) => {
+            if (!nextOpen && isSubmitting) {
+              return;
+            }
+
+            setCaptureOpen(nextOpen);
+
+            if (!nextOpen) {
+              setError(null);
+            }
+          }}
+        >
+          <DialogTrigger asChild>
+            {trigger ?? (
+              <Button size="lg">
+                Join Waitlist
+                <ChevronRight className="ml-1 h-5 w-5" />
+              </Button>
+            )}
+          </DialogTrigger>
+
+          <DialogContent className="border-border/60 p-6 sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Join Early Access</DialogTitle>
+              <DialogDescription>
+                Enter your details to continue to the verified tasks waitlist.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={proceedToTasks}>
+              <WaitlistCaptureFields
+                name={name}
+                email={email}
+                error={error}
+                disabled={isSubmitting}
+                canContinue={canOpenModal}
+                onNameChange={setName}
+                onEmailChange={setEmail}
+                showError
+              />
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
       <Dialog
-        open={open}
+        open={tasksOpen}
         onOpenChange={(nextOpen) => {
           if (!nextOpen && isSubmitting) {
             return;
           }
 
-          if (nextOpen && !canOpenModal) {
-            return;
-          }
-
-          setOpen(nextOpen);
+          setTasksOpen(nextOpen);
 
           if (!nextOpen) {
             setError(null);
           }
         }}
       >
-        <div className="space-y-2">
-          <Input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            disabled={isSubmitting}
-            className="w-full rounded-md bg-foreground/10 px-4 py-6"
-          />
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            disabled={isSubmitting}
-            className="w-full rounded-md bg-foreground/10 px-4 py-6"
-          />
-
-          <DialogTrigger asChild>
-            <Button
-              variant="default"
-              size="lg"
-              className="mt-1 w-full py-6 font-medium"
-              disabled={!canOpenModal}
-            >
-              Join Early Access
-              <ChevronRight className="ml-1 h-5 w-5" />
-            </Button>
-          </DialogTrigger>
-        </div>
-
         <DialogContent className="flex h-[85vh] max-h-[85vh] flex-col overflow-hidden border-border/60 p-0">
           <div className="border-b border-border/60 px-6 pt-6 pb-4">
             <DialogHeader>
@@ -237,7 +355,7 @@ export function WaitlistModal({ tasks }: WaitlistModalProps) {
               </div>
 
               {error ? (
-                <p className="text-sm text-red-400" role="alert">
+                <p className="text-sm text-destructive" role="alert">
                   {error}
                 </p>
               ) : null}
