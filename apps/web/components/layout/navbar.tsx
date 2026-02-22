@@ -221,7 +221,7 @@ export function Navbar({ tasks }: NavbarProps) {
             </div>
           </div>
 
-          <div className="space-y-3 bottom-0">
+          <div className="space-y-3 bottom-0 mb-12">
             <Button asChild variant="link" className="w-full justify-center">
               <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 Login
