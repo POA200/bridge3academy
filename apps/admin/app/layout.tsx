@@ -28,25 +28,25 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="border-b bg-white">
+        <header className="border-b border-border bg-card">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
             <Link href="/" className="text-sm font-semibold">
               Bridge3Academy Admin
             </Link>
 
             <nav className="flex items-center gap-2 text-sm">
-              <Link href="/" className="rounded-md px-3 py-2 hover:bg-gray-100">
+              <Link href="/" className="rounded-md px-3 py-2 hover:bg-muted">
                 Home
               </Link>
               <Link
                 href="/waitlist"
-                className="rounded-md px-3 py-2 hover:bg-gray-100"
+                className="rounded-md px-3 py-2 hover:bg-muted"
               >
                 Waitlist
               </Link>
               <Link
                 href="/tasks"
-                className="rounded-md px-3 py-2 hover:bg-gray-100"
+                className="rounded-md px-3 py-2 hover:bg-muted"
               >
                 Tasks
               </Link>

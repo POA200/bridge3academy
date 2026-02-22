@@ -123,11 +123,11 @@ export default async function TasksPage() {
     <main className="mx-auto w-full max-w-5xl space-y-8 p-6">
       <section className="space-y-2">
         <h1 className="text-2xl font-bold">Task Admin</h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Create, edit, and disable waitlist tasks.
         </p>
         {dbErrorMessage ? (
-          <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-md border border-destructive-border bg-destructive-muted px-3 py-2 text-sm text-destructive">
             {dbErrorMessage}
           </p>
         ) : null}
@@ -165,7 +165,7 @@ export default async function TasksPage() {
           />
           <button
             type="submit"
-            className="md:col-span-2 rounded-md bg-black px-4 py-2 text-white"
+            className="md:col-span-2 rounded-md bg-primary px-4 py-2 text-primary-foreground"
             disabled={Boolean(dbErrorMessage)}
           >
             Create Task
@@ -177,7 +177,7 @@ export default async function TasksPage() {
         <h2 className="text-lg font-semibold">All Tasks</h2>
 
         {tasks.length === 0 ? (
-          <p className="rounded-md border p-4 text-sm text-gray-500">
+          <p className="rounded-md border p-4 text-sm text-muted-foreground">
             No tasks found.
           </p>
         ) : (
@@ -219,8 +219,8 @@ export default async function TasksPage() {
                   <span
                     className={`rounded-full px-2 py-1 text-xs ${
                       task.active
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-success-muted text-success"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {task.active ? "Active" : "Disabled"}
@@ -228,7 +228,7 @@ export default async function TasksPage() {
 
                   <button
                     type="submit"
-                    className="rounded-md bg-black px-3 py-2 text-sm text-white"
+                    className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground"
                     disabled={Boolean(dbErrorMessage)}
                   >
                     Save Changes
@@ -241,7 +241,7 @@ export default async function TasksPage() {
                   <input type="hidden" name="taskId" value={task.id} />
                   <button
                     type="submit"
-                    className="rounded-md border border-red-300 px-3 py-2 text-sm text-red-600"
+                    className="rounded-md border border-destructive-border px-3 py-2 text-sm text-destructive"
                     disabled={Boolean(dbErrorMessage)}
                   >
                     Disable Task

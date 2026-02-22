@@ -1,5 +1,28 @@
 import Link from "next/link";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/db";
+import { DeleteUserButton } from "../../components/delete-user-button";
+
+async function deleteWaitlistUser(formData: FormData) {
+  "use server";
+
+  const userId = String(formData.get("userId") ?? "").trim();
+
+  if (!userId) {
+    return;
+  }
+
+  await prisma.$transaction([
+    prisma.userTask.deleteMany({
+      where: { userId },
+    }),
+    prisma.waitlistUser.delete({
+      where: { id: userId },
+    }),
+  ]);
+
+  revalidatePath("/waitlist");
+}
 
 export default async function WaitlistPage() {
   let users: Array<{
@@ -49,7 +72,7 @@ export default async function WaitlistPage() {
       <section className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">Waitlist Admin</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             View waitlist users, score, and completed tasks.
           </p>
         </div>
@@ -57,13 +80,13 @@ export default async function WaitlistPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/"
-            className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+            className="rounded-md border px-3 py-2 text-sm hover:bg-muted"
           >
             Home
           </Link>
           <Link
             href="/tasks"
-            className="rounded-md bg-black px-3 py-2 text-sm text-white"
+            className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground"
           >
             Go to Tasks
           </Link>
@@ -71,7 +94,7 @@ export default async function WaitlistPage() {
       </section>
 
       {dbErrorMessage ? (
-        <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-md border border-destructive-border bg-destructive-muted px-3 py-2 text-sm text-destructive">
           {dbErrorMessage}
         </p>
       ) : null}
@@ -79,19 +102,20 @@ export default async function WaitlistPage() {
       <section className="rounded-lg border">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="border-b bg-gray-50 text-left">
+            <thead className="border-b bg-muted text-left">
               <tr>
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Email</th>
                 <th className="px-4 py-3 font-semibold">Score</th>
                 <th className="px-4 py-3 font-semibold">Tasks</th>
                 <th className="px-4 py-3 font-semibold">Joined</th>
+                <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-gray-500">
+                  <td colSpan={6} className="px-4 py-6 text-muted-foreground">
                     No waitlist users found.
                   </td>
                 </tr>
@@ -103,7 +127,7 @@ export default async function WaitlistPage() {
                     <td className="px-4 py-3">{user.score}</td>
                     <td className="px-4 py-3">
                       {user.tasks.length === 0 ? (
-                        <span className="text-gray-500">No tasks</span>
+                        <span className="text-muted-foreground">No tasks</span>
                       ) : (
                         <ul className="space-y-1">
                           {user.tasks.map((userTask) => (
@@ -114,8 +138,17 @@ export default async function WaitlistPage() {
                         </ul>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {new Date(user.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <DeleteUserButton
+                        userId={user.id}
+                        userName={user.name}
+                        userEmail={user.email}
+                        action={deleteWaitlistUser}
+                        disabled={Boolean(dbErrorMessage)}
+                      />
                     </td>
                   </tr>
                 ))
