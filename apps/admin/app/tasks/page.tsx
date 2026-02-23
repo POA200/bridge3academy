@@ -136,14 +136,30 @@ async function deleteTask(formData: FormData) {
     return;
   }
 
-  await prisma.$transaction([
-    prisma.userTask.deleteMany({
-      where: { taskId },
-    }),
-    prisma.task.delete({
-      where: { id: taskId },
-    }),
-  ]);
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await prisma.$transaction([
+        prisma.userTask.deleteMany({
+          where: { taskId },
+        }),
+        prisma.task.delete({
+          where: { id: taskId },
+        }),
+      ]);
+      break;
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        console.error("Failed to delete task after retries", error);
+        return;
+      }
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 250 * attempt);
+      });
+    }
+  }
 
   revalidatePath("/tasks");
 }
