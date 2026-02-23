@@ -10,7 +10,7 @@ const TASK_TYPE_OPTIONS = [
   { value: "referral", label: "Referral" },
 ] as const;
 
-const TASK_TYPE_VALUES = new Set(
+const TASK_TYPE_VALUES = new Set<string>(
   TASK_TYPE_OPTIONS.map((option) => option.value),
 );
 
