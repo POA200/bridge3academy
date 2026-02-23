@@ -3,6 +3,17 @@ import { prisma } from "@repo/db";
 
 export const dynamic = "force-dynamic";
 
+const TASK_TYPE_OPTIONS = [
+  { value: "social", label: "Social" },
+  { value: "community", label: "Community" },
+  { value: "engagement", label: "Engagement" },
+  { value: "referral", label: "Referral" },
+] as const;
+
+const TASK_TYPE_VALUES = new Set(
+  TASK_TYPE_OPTIONS.map((option) => option.value),
+);
+
 type AdminTask = {
   id: string;
   title: string;
@@ -40,8 +51,15 @@ async function createTask(formData: FormData) {
   const points = Number(formData.get("points") ?? 0);
   const type = String(formData.get("type") ?? "").trim();
   const link = parseTaskLink(String(formData.get("link") ?? ""));
+  const isValidType = TASK_TYPE_VALUES.has(type);
 
-  if (!title || !type || !Number.isFinite(points) || points < 0 || !link) {
+  if (
+    !title ||
+    !isValidType ||
+    !Number.isFinite(points) ||
+    points < 0 ||
+    !link
+  ) {
     return;
   }
 
@@ -66,11 +84,12 @@ async function updateTask(formData: FormData) {
   const points = Number(formData.get("points") ?? 0);
   const type = String(formData.get("type") ?? "").trim();
   const link = parseTaskLink(String(formData.get("link") ?? ""));
+  const isValidType = TASK_TYPE_VALUES.has(type);
 
   if (
     !taskId ||
     !title ||
-    !type ||
+    !isValidType ||
     !Number.isFinite(points) ||
     points < 0 ||
     !link
@@ -104,6 +123,27 @@ async function disableTask(formData: FormData) {
     where: { id: taskId },
     data: { active: false },
   });
+
+  revalidatePath("/tasks");
+}
+
+async function deleteTask(formData: FormData) {
+  "use server";
+
+  const taskId = String(formData.get("taskId") ?? "").trim();
+
+  if (!taskId) {
+    return;
+  }
+
+  await prisma.$transaction([
+    prisma.userTask.deleteMany({
+      where: { taskId },
+    }),
+    prisma.task.delete({
+      where: { id: taskId },
+    }),
+  ]);
 
   revalidatePath("/tasks");
 }
@@ -144,12 +184,18 @@ export default async function TasksPage() {
             required
             className="rounded-md border px-3 py-2"
           />
-          <input
+          <select
             name="type"
-            placeholder="Type (social, community...)"
             required
+            defaultValue="social"
             className="rounded-md border px-3 py-2"
-          />
+          >
+            {TASK_TYPE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <input
             name="points"
             type="number"
@@ -194,12 +240,20 @@ export default async function TasksPage() {
                   required
                   className="rounded-md border px-3 py-2"
                 />
-                <input
+                <select
                   name="type"
-                  defaultValue={task.type}
+                  defaultValue={
+                    TASK_TYPE_VALUES.has(task.type) ? task.type : "social"
+                  }
                   required
                   className="rounded-md border px-3 py-2"
-                />
+                >
+                  {TASK_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
                 <input
                   name="points"
                   type="number"
@@ -250,6 +304,17 @@ export default async function TasksPage() {
                   </button>
                 </form>
               ) : null}
+
+              <form action={deleteTask} className="mt-2">
+                <input type="hidden" name="taskId" value={task.id} />
+                <button
+                  type="submit"
+                  className="rounded-md border border-destructive-border px-3 py-2 text-sm text-destructive"
+                  disabled={Boolean(dbErrorMessage)}
+                >
+                  Delete Task
+                </button>
+              </form>
             </div>
           ))
         )}
