@@ -1,6 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/db";
 
+export const dynamic = "force-dynamic";
+
 type AdminTask = {
   id: string;
   title: string;
