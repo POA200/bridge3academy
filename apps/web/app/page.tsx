@@ -1,8 +1,9 @@
 import { CTA } from "@/components/sections/cta";
 import { FAQ } from "@/components/sections/faq";
-import { Features } from "@/components/sections/features";
+import { Curriculum } from "@/components/sections/curriculum";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
+import { Testimonials } from "@/components/sections/testimonials";
 import { prisma } from "@repo/db";
 
 export default async function HomePage() {
@@ -20,10 +21,11 @@ export default async function HomePage() {
 
   return (
     <>
-      <div className="bg-background px-2 md:px-12">
+      <div className="bg-background">
         <Hero tasks={tasks} />
         <HowItWorks />
-        <Features />
+        <Curriculum />
+        <Testimonials />
         <FAQ />
         <CTA />
       </div>

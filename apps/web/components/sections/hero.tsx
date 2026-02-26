@@ -16,7 +16,10 @@ type HeroProps = {
 
 export function Hero({ tasks }: HeroProps) {
   return (
-    <section id="home" className="px-2 md:px-24 py-8 md:py-24">
+    <section
+      id="home"
+      className="px-2 md:px-12 lg:px-24 py-8 md:py-12 lg:py-24"
+    >
       <div className="flex w-full flex-col items-center justify-between gap-8 lg:flex-row lg:gap-12">
         <div className="w-full text-left lg:w-1/2">
           <div className="max-w-[500px]">

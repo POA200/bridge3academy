@@ -1,8 +1,9 @@
 import { CTA } from "../../components/sections/cta";
 import { FAQ } from "../../components/sections/faq";
-import { Features } from "../../components/sections/features";
+import { Curriculum } from "../../components/sections/curriculum";
 import { Hero } from "../../components/sections/hero";
 import { HowItWorks } from "../../components/sections/how-it-works";
+import { Testimonials } from "../../components/sections/testimonials";
 import { Tracks } from "../../components/sections/tracks";
 import { prisma } from "@repo/db";
 
@@ -23,7 +24,8 @@ export default async function MarketingPage() {
     <main>
       <Hero tasks={tasks} />
       <HowItWorks />
-      <Features />
+      <Curriculum />
+      <Testimonials />
       <Tracks />
       <FAQ />
       <CTA />

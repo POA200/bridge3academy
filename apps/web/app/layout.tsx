@@ -45,7 +45,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} px-2 md:px-24 py-1 md:py-8`}>
+      <body className={`${inter.className} px-2 md:px-24 py-2 md:py-8`}>
         <Navbar tasks={tasks} />
         {children}
         <Footer />
