@@ -66,12 +66,12 @@ export function Curriculum() {
       id="curriculum"
       className="px-2 py-8 md:px-12 md:py-12 lg:px-24 lg:py-24"
     >
-      <div className="mx-auto flex w-full max-w-[720px] flex-col items-center">
-        <p className="text-sm font-medium tracking-[0.2em] text-primary uppercase">
+      <div className="mx-auto flex w-full flex-col items-center">
+        <p className="text-sm font-regular tracking-[0.2em] text-primary uppercase">
           Curriculum Overview
         </p>
 
-        <div className="mt-4 flex items-center rounded-full border border-primary/30 bg-primary/15 p-1">
+        <div className="mt-2 flex items-center rounded-full border border-primary/30 bg-primary/15 p-1">
           {curriculumTracks.map((track) => {
             const isActive = track.id === activeLevel;
 
@@ -80,7 +80,7 @@ export function Curriculum() {
                 key={track.id}
                 type="button"
                 onClick={() => setActiveLevel(track.id)}
-                className={`rounded-full px-4 py-1.5 text-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                className={`rounded-full px-2 py-1 text-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "bg-transparent text-primary"
@@ -94,15 +94,15 @@ export function Curriculum() {
         </div>
 
         <div
-          className="mt-8 h-[340px] w-full rounded-none border border-border/80 bg-gradient-to-r from-background via-muted/40 to-background"
+          className="mt-4 h-[340px] w-full rounded-none border border-border/80 bg-gradient-to-r from-background via-muted/40 to-background"
           aria-hidden="true"
         />
 
-        <div className="mt-6 w-full">
-          <h3 className="text-4xl font-bold leading-tight text-foreground">
+        <div className="mt-4 w-full">
+          <h3 className="text-xl md:text-2xl lg:text-3xl font-semibold leading-tight text-foreground">
             {activeTrack.title}
           </h3>
-          <ul className="mt-4 list-disc space-y-1 pl-6 text-xl text-foreground">
+          <ul className="mt-3 list-disc space-y-1 pl-6 text-lg md:text-base text-foreground">
             {activeTrack.topics.map((topic) => (
               <li key={topic}>{topic}</li>
             ))}
@@ -111,7 +111,7 @@ export function Curriculum() {
 
         <Button
           type="button"
-          className="mt-8 h-12 w-full text-lg font-medium"
+          className="mt-6 w-full cursor-pointer"
           size="lg"
         >
           {activeTrack.ctaLabel}

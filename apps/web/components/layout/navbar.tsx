@@ -18,7 +18,6 @@ type WaitlistTask = {
 const navLinks = [
   { label: "How it works", href: "/#how-it-works" },
   { label: "Curriculum", href: "/#curriculum" },
-  { label: "Testimonials", href: "/#testimonials" },
   { label: "Tracks", href: "/#tracks" },
   { label: "FAQs", href: "/#faqs" },
   { label: "About", href: "/#about" },

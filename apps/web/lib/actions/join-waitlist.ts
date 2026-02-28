@@ -28,22 +28,6 @@ function normalizePayload(payload: string | JoinWaitlistPayload) {
   };
 }
 
-export async function getWaitlistTasks() {
-  return prisma.task.findMany({
-    where: {
-      active: true,
-    },
-    select: {
-      id: true,
-      title: true,
-      points: true,
-      type: true,
-      link: true,
-    },
-    orderBy: [{ points: "desc" }, { createdAt: "asc" }],
-  });
-}
-
 export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
   const normalized = normalizePayload(payload);
 

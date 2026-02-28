@@ -59,22 +59,22 @@ function TestimonialCard({ name, quote }: Testimonial) {
     .toUpperCase();
 
   return (
-    <article className="rounded-xl border border-primary/60 bg-gradient-to-b from-primary/70 via-background to-background p-4 md:p-5">
-      <div className="flex h-full min-h-[250px] flex-col justify-between gap-8">
+    <article className="rounded-xl border border-primary/30 bg-gradient-to-b from-primary/30 via-background to-background p-4 md:p-5">
+      <div className="flex h-full flex-col justify-between gap-6">
         <div>
           <div
-            className="mb-6 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+            className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-primary bg-primary/20 backdrop-blur-lg text-sm font-semibold text-primary"
             aria-hidden="true"
           >
             {initials}
           </div>
 
-          <p className="text-3xl leading-snug text-foreground italic">
+          <p className="text-lg md:text-xl leading-snug text-foreground italic">
             “{quote}”
           </p>
         </div>
 
-        <p className="text-3xl text-foreground">— {name}</p>
+        <p className="text-lg md:text-xl text-foreground">— {name}</p>
       </div>
     </article>
   );

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { prisma } from "@repo/db";
+import { getWaitlistTasks } from "@/lib/data/waitlist-tasks";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,17 +28,7 @@ export default async function RootLayout({
   }> = [];
 
   try {
-    tasks = await prisma.task.findMany({
-      where: { active: true },
-      select: {
-        id: true,
-        title: true,
-        points: true,
-        type: true,
-        link: true,
-      },
-      orderBy: [{ points: "desc" }, { createdAt: "asc" }],
-    });
+    tasks = await getWaitlistTasks();
   } catch {
     tasks = [];
   }
@@ -48,7 +38,7 @@ export default async function RootLayout({
       <body className={`${inter.className} px-2 md:px-24 py-2 md:py-8`}>
         <Navbar tasks={tasks} />
         {children}
-        <Footer />
+        <Footer tasks={tasks} />
       </body>
     </html>
   );

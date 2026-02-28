@@ -54,8 +54,8 @@ export function FAQ() {
       id="faqs"
       className="px-2 py-8 md:px-12 md:py-12 lg:px-24 lg:py-24"
     >
-      <div className="mx-auto w-full max-w-[820px]">
-        <h2 className="mb-6 text-center text-4xl font-bold text-primary md:text-5xl">
+      <div className="mx-auto w-full">
+        <h2 className="mb-4 text-center text-2xl font-bold text-primary md:text-4xl">
           Frequently Asked Questions
         </h2>
 
@@ -66,16 +66,16 @@ export function FAQ() {
             return (
               <article
                 key={item.id}
-                className="rounded-md border border-border/80"
+                className="rounded-lg bg-foreground/1 backdrop-blur-md border-2 border-foreground/20"
               >
                 <button
                   type="button"
                   onClick={() => toggleItem(item.id)}
-                  className="flex w-full items-center justify-between rounded-md bg-gradient-to-r from-background via-muted/45 to-background px-5 py-4 text-left"
+                  className="flex w-full items-center justify-between rounded-md bg-foreground/1 backdrop-blur-md border border-foreground/20 px-5 py-4 text-left"
                   aria-expanded={isOpen}
                   aria-controls={`${item.id}-panel`}
                 >
-                  <span className="text-3xl font-medium text-foreground">
+                  <span className="text-xl md:text-2xl font-medium text-foreground">
                     {item.question}
                   </span>
                   <span className="text-foreground" aria-hidden="true">
@@ -88,11 +88,8 @@ export function FAQ() {
                 </button>
 
                 {isOpen ? (
-                  <div
-                    id={`${item.id}-panel`}
-                    className="border-t border-border/80 bg-background px-5 py-4"
-                  >
-                    <p className="text-lg leading-relaxed text-foreground/90">
+                  <div id={`${item.id}-panel`} className="border-t px-5 py-4">
+                    <p className="text-md md:text-lg leading-relaxed text-foreground/90">
                       {item.answer}
                     </p>
                   </div>
