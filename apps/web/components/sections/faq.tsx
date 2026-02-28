@@ -54,7 +54,7 @@ export function FAQ() {
       id="faqs"
       className="px-2 py-8 md:px-12 md:py-12 lg:px-24 lg:py-24"
     >
-      <div className="mx-auto w-full">
+      <div className="mx-auto w-full max-w-4xl">
         <h2 className="mb-4 text-center text-2xl font-bold text-primary md:text-4xl">
           Frequently Asked Questions
         </h2>
