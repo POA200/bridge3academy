@@ -1,6 +1,7 @@
 import { Badge } from "@repo/ui";
 import { Rocket } from "lucide-react";
 import { WaitlistModal } from "./waitlist-modal";
+import { WaitlistTotal } from "./waitlist-total";
 
 type WaitlistTask = {
   id: string;
@@ -47,6 +48,7 @@ export function Hero({ tasks }: HeroProps) {
 
             <div className="mt-8 w-full">
               <WaitlistModal tasks={tasks} />
+              <WaitlistTotal />
               <p className="mt-4 max-w-sm text-sm text-muted-foreground">
                 Early members receive priority verification and scholarship
                 consideration.

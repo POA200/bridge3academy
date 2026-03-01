@@ -51,14 +51,24 @@ export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
 
   const result = await prisma.$transaction(
     async (transaction: any) => {
-    const waitlistUser = await transaction.waitlistUser.upsert({
+    const existingUser = await transaction.waitlistUser.findUnique({
       where: { email: normalized.email },
-      update: { name: normalized.name },
-      create: {
-        name: normalized.name,
-        email: normalized.email,
-      },
+      select: { id: true, createdAt: true },
     });
+
+    const waitlistUser = existingUser
+      ? await transaction.waitlistUser.update({
+          where: { email: normalized.email },
+          data: { name: normalized.name },
+          select: { id: true, createdAt: true },
+        })
+      : await transaction.waitlistUser.create({
+          data: {
+            name: normalized.name,
+            email: normalized.email,
+          },
+          select: { id: true, createdAt: true },
+        });
 
     if (verifiedTaskIds.length > 0) {
       await transaction.userTask.createMany({
@@ -90,9 +100,24 @@ export async function joinWaitlist(payload: string | JoinWaitlistPayload) {
       data: { score: totalScore },
     });
 
+    const usersBefore = await transaction.waitlistUser.count({
+      where: {
+        OR: [
+          { createdAt: { lt: waitlistUser.createdAt } },
+          {
+            AND: [
+              { createdAt: waitlistUser.createdAt },
+              { id: { lte: waitlistUser.id } },
+            ],
+          },
+        ],
+      },
+    });
+
     return {
       score: totalScore,
       completedTaskCount: verifiedTaskIds.length,
+      waitlistPosition: usersBefore,
     };
     },
   );

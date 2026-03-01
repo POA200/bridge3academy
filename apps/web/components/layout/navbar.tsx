@@ -4,7 +4,10 @@ import { Button } from "@repo/ui";
 import { ChevronRight, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SocialLinks } from "@/components/layout/social-links";
+import { getInPageHref } from "@/lib/navigation";
 import { WaitlistModal } from "@/components/sections/waitlist-modal";
 
 type WaitlistTask = {
@@ -31,10 +34,58 @@ type NavbarProps = {
 };
 
 export function Navbar({ tasks }: NavbarProps) {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const touchStartYRef = useRef<number | null>(null);
+
+  const scrollToSection = (href: string) => {
+    const hashIndex = href.indexOf("#");
+    if (hashIndex === -1) {
+      return;
+    }
+
+    const sectionId = href.slice(hashIndex + 1);
+    const section = document.getElementById(sectionId);
+
+    if (!section) {
+      return;
+    }
+
+    const navbarOffset = 112;
+    const top =
+      section.getBoundingClientRect().top + window.scrollY - navbarOffset;
+
+    window.scrollTo({ top, behavior: "smooth" });
+    window.history.replaceState(null, "", `#${sectionId}`);
+  };
+
+  const handleSectionLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    closeMobileMenu = false,
+  ) => {
+    if (closeMobileMenu) {
+      setIsMobileMenuOpen(false);
+    }
+
+    if (pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+    scrollToSection(href);
+  };
+
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -97,6 +148,7 @@ export function Navbar({ tasks }: NavbarProps) {
           href="/"
           className="flex items-center gap-3"
           aria-label="Bridge3Academy home"
+          onClick={handleLogoClick}
         >
           <Image
             src="/bridge3academy logo.png"
@@ -115,7 +167,12 @@ export function Navbar({ tasks }: NavbarProps) {
 
         <div className="hidden items-center gap-6 md:flex font-regular">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={navLinkClass}>
+            <Link
+              key={link.href}
+              href={getInPageHref(pathname, link.href)}
+              className={navLinkClass}
+              onClick={(event) => handleSectionLinkClick(event, link.href)}
+            >
               {link.label}
             </Link>
           ))}
@@ -210,9 +267,11 @@ export function Navbar({ tasks }: NavbarProps) {
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={getInPageHref(pathname, link.href)}
                   className={`${navLinkClass} flex w-full items-center justify-between`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(event) =>
+                    handleSectionLinkClick(event, link.href, true)
+                  }
                 >
                   <span>{link.label}</span>
                   <ChevronRight className="h-5 w-5" aria-hidden="true" />
@@ -240,6 +299,11 @@ export function Navbar({ tasks }: NavbarProps) {
                   <ChevronRight className="ml-1 h-5 w-5" aria-hidden="true" />
                 </Button>
               }
+            />
+            <SocialLinks
+              tasks={tasks}
+              className="flex items-center justify-center gap-4 pt-2"
+              onLinkClick={() => setIsMobileMenuOpen(false)}
             />
           </div>
         </div>

@@ -34,7 +34,7 @@ export function CTA() {
       id="about"
       className="px-2 py-8 md:px-12 md:py-12 lg:px-24 lg:py-24"
     >
-      <div className="mx-auto grid w-full grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="flex flex-col justify-between">
           <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-primary md:text-6xl">
             ABOUT

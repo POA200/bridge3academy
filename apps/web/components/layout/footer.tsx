@@ -1,12 +1,10 @@
-import {
-  ChevronRight,
-  MessageCircle,
-  Send,
-  Twitter,
-  VenetianMask,
-} from "lucide-react";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { getInPageHref } from "@/lib/navigation";
+import { SocialLinks } from "@/components/layout/social-links";
 import { WaitlistModal } from "@/components/sections/waitlist-modal";
 
 type WaitlistTask = {
@@ -24,18 +22,48 @@ const footerLinks = [
   { label: "Contact", href: "/#about" },
 ];
 
-const socialLinks = [
-  { label: "X", href: "#", icon: Twitter },
-  { label: "Discord", href: "#", icon: VenetianMask },
-  { label: "Telegram", href: "#", icon: Send },
-  { label: "WhatsApp", href: "#", icon: MessageCircle },
-];
-
 type FooterProps = {
   tasks: WaitlistTask[];
 };
 
 export function Footer({ tasks }: FooterProps) {
+  const pathname = usePathname();
+
+  const scrollToSection = (href: string) => {
+    const hashIndex = href.indexOf("#");
+    if (hashIndex === -1) {
+      return;
+    }
+
+    const sectionId = href.slice(hashIndex + 1);
+    const section = document.getElementById(sectionId);
+
+    if (!section) {
+      return;
+    }
+
+    const navbarOffset = 112;
+    const top =
+      section.getBoundingClientRect().top + window.scrollY - navbarOffset;
+
+    window.scrollTo({ top, behavior: "smooth" });
+    window.history.replaceState(null, "", `#${sectionId}`);
+  };
+
+  const handleFooterLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    const hasSectionHash = href.includes("#");
+
+    if (!hasSectionHash || pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+    scrollToSection(href);
+  };
+
   return (
     <footer className="mt-12 rounded-none bg-gradient-to-b from-background via-background to-primary/15 px-4 py-10 md:mt-20 md:px-8 md:py-14 lg:px-12">
       <div className="mx-auto w-full">
@@ -72,30 +100,16 @@ export function Footer({ tasks }: FooterProps) {
               {footerLinks.map((link) => (
                 <Link
                   key={link.label}
-                  href={link.href}
+                  href={getInPageHref(pathname, link.href)}
                   className="transition-colors hover:text-primary"
+                  onClick={(event) => handleFooterLinkClick(event, link.href)}
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
 
-            <div className="flex items-center gap-4">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-
-                return (
-                  <Link
-                    key={social.label}
-                    href={social.href}
-                    aria-label={social.label}
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-primary bg-primary/15 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </Link>
-                );
-              })}
-            </div>
+            <SocialLinks tasks={tasks} />
           </div>
         </div>
 

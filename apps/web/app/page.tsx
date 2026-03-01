@@ -3,6 +3,9 @@ import { FAQ } from "@/components/sections/faq";
 import { Curriculum } from "@/components/sections/curriculum";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
+{
+  /*import { Tracks } from "@/components/sections/tracks";*/
+}
 import { Testimonials } from "@/components/sections/testimonials";
 import { getWaitlistTasks } from "@/lib/data/waitlist-tasks";
 
@@ -16,6 +19,7 @@ export default async function HomePage() {
         <HowItWorks />
         <Curriculum />
         <Testimonials />
+        {/*<Tracks />*/}
         <FAQ />
         <CTA />
       </div>

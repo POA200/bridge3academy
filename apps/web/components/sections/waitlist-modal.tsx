@@ -31,6 +31,25 @@ type WaitlistModalProps = {
   trigger?: ReactNode;
 };
 
+function toOrdinal(value: number) {
+  const mod10 = value % 10;
+  const mod100 = value % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return `${value}st`;
+  }
+
+  if (mod10 === 2 && mod100 !== 12) {
+    return `${value}nd`;
+  }
+
+  if (mod10 === 3 && mod100 !== 13) {
+    return `${value}rd`;
+  }
+
+  return `${value}th`;
+}
+
 type WaitlistCaptureFieldsProps = {
   name: string;
   email: string;
@@ -107,6 +126,7 @@ export function WaitlistModal({
   const [openedTaskIds, setOpenedTaskIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [waitlistPosition, setWaitlistPosition] = useState<number | null>(null);
 
   const scoreById = useMemo(
     () => new Map(tasks.map((task) => [task.id, task.points])),
@@ -192,11 +212,13 @@ export function WaitlistModal({
     setIsSubmitting(true);
 
     try {
-      await joinWaitlist({
+      const result = await joinWaitlist({
         name: trimmedName,
         email: normalizedEmail,
         completedTaskIds,
       });
+      setWaitlistPosition(result.waitlistPosition);
+      window.dispatchEvent(new CustomEvent("waitlist:joined"));
       setTasksOpen(false);
       setSuccessOpen(true);
     } catch {
@@ -214,6 +236,7 @@ export function WaitlistModal({
     setEmail("");
     setCompletedTaskIds([]);
     setOpenedTaskIds([]);
+    setWaitlistPosition(null);
     setError(null);
   };
 
@@ -393,11 +416,15 @@ export function WaitlistModal({
       >
         <DialogContent className="border-border/60 p-6 sm:max-w-md">
           <DialogHeader className="text-center">
-            <CheckCircle2 className="mx-auto mb-2 h-12 w-12 text-primary" />
+            <CheckCircle2 className="mx-auto mb-6 h-12 w-12 text-primary" />
             <DialogTitle>You&apos;re on the waitlist</DialogTitle>
             <DialogDescription>
-              Thank you for joining, {trimmedName || "there"}. We&apos;ll be in
-              touch soon with your early access update.
+              Thank you for joining, {trimmedName || "there"}. You&apos;re the{" "}
+              <span className="font-semibold text-primary">
+                {waitlistPosition ? toOrdinal(waitlistPosition) : "latest"}
+              </span>{" "}
+              learner to join the waitlist. We&apos;ll be in touch soon with
+              your early access update.
             </DialogDescription>
           </DialogHeader>
 
