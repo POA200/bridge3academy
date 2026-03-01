@@ -18,7 +18,7 @@ type WaitlistTask = {
 const footerLinks = [
   { label: "Academy", href: "/#about" },
   { label: "Curriculum", href: "/#curriculum" },
-  { label: "Legal", href: "/legal" },
+  { label: "Legal", href: "/legal", disabled: true },
   { label: "Contact", href: "/#about" },
 ];
 
@@ -97,16 +97,26 @@ export function Footer({ tasks }: FooterProps) {
 
           <div className="flex flex-col items-start justify-between gap-8 lg:items-end">
             <nav className="flex flex-col items-start text-xl md:text-2xl text-foreground lg:items-end">
-              {footerLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={getInPageHref(pathname, link.href)}
-                  className="transition-colors hover:text-primary"
-                  onClick={(event) => handleFooterLinkClick(event, link.href)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {footerLinks.map((link) =>
+                link.disabled ? (
+                  <span
+                    key={link.label}
+                    className="cursor-not-allowed text-muted-foreground"
+                    aria-disabled="true"
+                  >
+                    {link.label}
+                  </span>
+                ) : (
+                  <Link
+                    key={link.label}
+                    href={getInPageHref(pathname, link.href)}
+                    className="transition-colors hover:text-primary"
+                    onClick={(event) => handleFooterLinkClick(event, link.href)}
+                  >
+                    {link.label}
+                  </Link>
+                ),
+              )}
             </nav>
 
             <SocialLinks tasks={tasks} />

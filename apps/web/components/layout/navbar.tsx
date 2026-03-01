@@ -21,7 +21,7 @@ type WaitlistTask = {
 const navLinks = [
   { label: "How it works", href: "/#how-it-works" },
   { label: "Curriculum", href: "/#curriculum" },
-  { label: "Tracks", href: "/#tracks" },
+  { label: "Tracks", href: "/#tracks", disabled: true },
   { label: "FAQs", href: "/#faqs" },
   { label: "About", href: "/#about" },
 ];
@@ -166,21 +166,31 @@ export function Navbar({ tasks }: NavbarProps) {
         </Link>
 
         <div className="hidden items-center gap-6 md:flex font-regular">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={getInPageHref(pathname, link.href)}
-              className={navLinkClass}
-              onClick={(event) => handleSectionLinkClick(event, link.href)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.disabled ? (
+              <span
+                key={link.href}
+                className="cursor-not-allowed text-muted-foreground"
+                aria-disabled="true"
+              >
+                {link.label}
+              </span>
+            ) : (
+              <Link
+                key={link.href}
+                href={getInPageHref(pathname, link.href)}
+                className={navLinkClass}
+                onClick={(event) => handleSectionLinkClick(event, link.href)}
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="link">
-            <Link href="/login">Login</Link>
+          <Button variant="link" disabled className="text-muted-foreground">
+            Login
           </Button>
           <WaitlistModal
             tasks={tasks}
@@ -264,27 +274,40 @@ export function Navbar({ tasks }: NavbarProps) {
             </div>
 
             <div className="flex flex-col gap-6 text-lg">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={getInPageHref(pathname, link.href)}
-                  className={`${navLinkClass} flex w-full items-center justify-between`}
-                  onClick={(event) =>
-                    handleSectionLinkClick(event, link.href, true)
-                  }
-                >
-                  <span>{link.label}</span>
-                  <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                </Link>
-              ))}
+              {navLinks.map((link) =>
+                link.disabled ? (
+                  <span
+                    key={link.href}
+                    className="flex w-full items-center justify-between cursor-not-allowed text-muted-foreground"
+                    aria-disabled="true"
+                  >
+                    <span>{link.label}</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={getInPageHref(pathname, link.href)}
+                    className={`${navLinkClass} flex w-full items-center justify-between`}
+                    onClick={(event) =>
+                      handleSectionLinkClick(event, link.href, true)
+                    }
+                  >
+                    <span>{link.label}</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </Link>
+                ),
+              )}
             </div>
           </div>
 
           <div className="space-y-3 bottom-0 mb-12">
-            <Button asChild variant="link" className="w-full justify-center">
-              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                Login
-              </Link>
+            <Button
+              variant="link"
+              disabled
+              className="w-full justify-center text-muted-foreground"
+            >
+              Login
             </Button>
             <WaitlistModal
               tasks={tasks}

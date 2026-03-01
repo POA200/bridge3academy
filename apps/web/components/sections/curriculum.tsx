@@ -173,7 +173,7 @@ export function Curriculum() {
           </p>
         </div>
 
-        <Button type="button" className="mt-6 w-full cursor-pointer" size="lg">
+        <Button type="button" className="mt-6 w-full" size="lg" disabled>
           {activeTrack.ctaLabel}
         </Button>
       </div>
