@@ -24,6 +24,7 @@ model Task {
   type      String
   link      String?   // 👈 add this (social link)
   active    Boolean   @default(true) // 👈 allow disable
+  sortOrder Int      @default(0)
   createdAt DateTime  @default(now())
 
   users     UserTask[]

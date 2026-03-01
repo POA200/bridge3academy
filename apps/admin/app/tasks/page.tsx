@@ -21,6 +21,7 @@ type AdminTask = {
   type: string;
   link: string | null;
   active: boolean;
+  sortOrder: number;
   createdAt: Date;
 };
 
@@ -63,6 +64,10 @@ async function createTask(formData: FormData) {
     return;
   }
 
+  const highestSortOrder = await prisma.task.aggregate({
+    _max: { sortOrder: true },
+  });
+
   await prisma.task.create({
     data: {
       title,
@@ -70,10 +75,72 @@ async function createTask(formData: FormData) {
       type,
       link,
       active: true,
+      sortOrder: (highestSortOrder._max.sortOrder ?? -1) + 1,
     },
   });
 
   revalidatePath("/tasks");
+}
+
+async function moveTaskByOffset(taskId: string, offset: -1 | 1) {
+  const id = taskId.trim();
+
+  if (!id) {
+    return;
+  }
+
+  const orderedTasks = await prisma.task.findMany({
+    select: {
+      id: true,
+      sortOrder: true,
+    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+
+  const currentIndex = orderedTasks.findIndex((task) => task.id === id);
+
+  if (currentIndex < 0) {
+    return;
+  }
+
+  const targetIndex = currentIndex + offset;
+
+  if (targetIndex < 0 || targetIndex >= orderedTasks.length) {
+    return;
+  }
+
+  const orderedTaskIds = orderedTasks.map((task) => task.id);
+  [orderedTaskIds[currentIndex], orderedTaskIds[targetIndex]] = [
+    orderedTaskIds[targetIndex],
+    orderedTaskIds[currentIndex],
+  ];
+
+  await prisma.$transaction(
+    orderedTaskIds.map((orderedTaskId, index) =>
+      prisma.task.update({
+        where: { id: orderedTaskId },
+        data: { sortOrder: index },
+      }),
+    ),
+  );
+
+  revalidatePath("/tasks");
+}
+
+async function moveTaskUp(formData: FormData) {
+  "use server";
+
+  const taskId = String(formData.get("taskId") ?? "");
+
+  await moveTaskByOffset(taskId, -1);
+}
+
+async function moveTaskDown(formData: FormData) {
+  "use server";
+
+  const taskId = String(formData.get("taskId") ?? "");
+
+  await moveTaskByOffset(taskId, 1);
 }
 
 async function updateTask(formData: FormData) {
@@ -170,7 +237,7 @@ export default async function TasksPage() {
 
   try {
     tasks = await prisma.task.findMany({
-      orderBy: [{ createdAt: "desc" }],
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     });
   } catch {
     dbErrorMessage =
@@ -182,7 +249,7 @@ export default async function TasksPage() {
       <section className="space-y-2">
         <h1 className="text-2xl font-bold">Task Admin</h1>
         <p className="text-sm text-muted-foreground">
-          Create, edit, and disable waitlist tasks.
+          Create, edit, disable, and arrange waitlist tasks.
         </p>
         {dbErrorMessage ? (
           <p className="rounded-md border border-destructive-border bg-destructive-muted px-3 py-2 text-sm text-destructive">
@@ -245,7 +312,7 @@ export default async function TasksPage() {
             No tasks found.
           </p>
         ) : (
-          tasks.map((task: AdminTask) => (
+          tasks.map((task: AdminTask, index: number) => (
             <div key={task.id} className="rounded-lg border p-4">
               <form action={updateTask} className="grid gap-3 md:grid-cols-2">
                 <input type="hidden" name="taskId" value={task.id} />
@@ -288,6 +355,26 @@ export default async function TasksPage() {
                 />
 
                 <div className="md:col-span-2 flex flex-wrap items-center gap-2">
+                  <button
+                    type="submit"
+                    formAction={moveTaskUp}
+                    className="rounded-md border px-3 py-2 text-sm"
+                    disabled={Boolean(dbErrorMessage) || index === 0}
+                  >
+                    Move Up
+                  </button>
+
+                  <button
+                    type="submit"
+                    formAction={moveTaskDown}
+                    className="rounded-md border px-3 py-2 text-sm"
+                    disabled={
+                      Boolean(dbErrorMessage) || index === tasks.length - 1
+                    }
+                  >
+                    Move Down
+                  </button>
+
                   <span
                     className={`rounded-full px-2 py-1 text-xs ${
                       task.active

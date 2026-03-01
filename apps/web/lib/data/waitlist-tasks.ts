@@ -1,6 +1,9 @@
 import { prisma } from "@repo/db";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getWaitlistTasks() {
+  noStore();
+
   return prisma.task.findMany({
     where: {
       active: true,
@@ -12,6 +15,10 @@ export async function getWaitlistTasks() {
       type: true,
       link: true,
     },
-    orderBy: [{ points: "desc" }, { createdAt: "asc" }],
+    orderBy: [
+      { sortOrder: "asc" },
+      { createdAt: "asc" },
+      { points: "desc" },
+    ],
   });
 }
