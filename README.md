@@ -133,3 +133,21 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
 - [Configuration Options](https://turborepo.dev/docs/reference/configuration)
 - [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+
+## Database and Deployment
+
+- Apply schema migrations:
+
+```sh
+npm run db:migrate:deploy
+```
+
+- Regenerate Prisma client manually (optional):
+
+```sh
+npm run db:generate
+```
+
+- For Vercel deployments, set `DATABASE_URL` in the project environment variables.
+- `web` and `admin` build scripts automatically run Prisma client generation before `next build`.
+- Run migrations as part of your release pipeline before (or immediately after) deployment.

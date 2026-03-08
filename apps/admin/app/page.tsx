@@ -12,7 +12,7 @@ export default function Home() {
           Manage waitlist users and task configuration from one place.
         </p>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           <Link
             href="/waitlist"
             className="rounded-lg border p-5 transition-colors hover:bg-foreground/5"
@@ -36,6 +36,19 @@ export default function Home() {
             </p>
             <span className="mt-4 inline-block rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">
               Open Tasks
+            </span>
+          </Link>
+
+          <Link
+            href="/testimonials"
+            className="rounded-lg border p-5 transition-colors hover:bg-foreground/5"
+          >
+            <h2 className="text-lg font-semibold">Testimonials</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Add and update testimonials shown on the landing page.
+            </p>
+            <span className="mt-4 inline-block rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">
+              Open Testimonials
             </span>
           </Link>
         </div>

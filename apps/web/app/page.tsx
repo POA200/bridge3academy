@@ -7,10 +7,12 @@ import { HowItWorks } from "@/components/sections/how-it-works";
   /*import { Tracks } from "@/components/sections/tracks";*/
 }
 import { Testimonials } from "@/components/sections/testimonials";
+import { getTestimonials } from "@/lib/data/testimonials";
 import { getWaitlistTasks } from "@/lib/data/waitlist-tasks";
 
 export default async function HomePage() {
   const tasks = await getWaitlistTasks();
+  const testimonials = await getTestimonials();
 
   return (
     <>
@@ -18,7 +20,7 @@ export default async function HomePage() {
         <Hero tasks={tasks} />
         <HowItWorks />
         <Curriculum />
-        <Testimonials />
+        <Testimonials testimonials={testimonials} />
         {/*<Tracks />*/}
         <FAQ />
         <CTA />

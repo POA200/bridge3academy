@@ -42,3 +42,13 @@ model UserTask {
 
   @@unique([userId, taskId])
 }
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  quote     String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

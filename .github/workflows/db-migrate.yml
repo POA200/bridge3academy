@@ -1,0 +1,46 @@
+name: Deploy Prisma Migrations
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - packages/db/prisma/**
+      - packages/db/prisma.config.ts
+      - packages/db/package.json
+      - package-lock.json
+      - .github/workflows/db-migrate.yml
+  workflow_dispatch:
+
+concurrency:
+  group: db-migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Run prisma migrate deploy
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Apply migrations
+        run: npm run db:migrate:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

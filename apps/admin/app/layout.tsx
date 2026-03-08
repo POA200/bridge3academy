@@ -50,6 +50,12 @@ export default function RootLayout({
               >
                 Tasks
               </Link>
+              <Link
+                href="/testimonials"
+                className="rounded-md px-3 py-2 hover:bg-muted"
+              >
+                Testimonials
+              </Link>
             </nav>
           </div>
         </header>
