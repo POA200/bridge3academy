@@ -14,7 +14,6 @@ import {
 } from "@repo/ui";
 import { CheckCircle2, ChevronRight, Loader2 } from "lucide-react";
 import { joinWaitlist } from "@/lib/actions/join-waitlist";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TaskItem } from "@/components/waitlist/task-item";
 
 type WaitlistTask = {
@@ -317,8 +316,8 @@ export function WaitlistModal({
           }
         }}
       >
-        <DialogContent className="flex h-[85vh] max-h-[85vh] flex-col overflow-hidden border-border/60 p-0">
-          <div className="border-b border-border/60 px-6 pt-6 pb-4">
+        <DialogContent className="fixed inset-0 z-50 flex h-[100dvh] max-h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col overflow-hidden border-border/60 p-0 sm:left-[50%] sm:top-[50%] sm:h-[85vh] sm:max-h-[85vh] sm:w-full sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+          <div className="border-b border-border/60 px-4 pt-6 pb-4 sm:px-6">
             <DialogHeader>
               <DialogTitle>Early Access Waitlist</DialogTitle>
               <DialogDescription>
@@ -327,11 +326,8 @@ export function WaitlistModal({
             </DialogHeader>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col px-6 py-4">
-            <form
-              onSubmit={handleSubmit}
-              className="flex min-h-0 flex-1 flex-col gap-4"
-            >
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 pb-4">
               <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
                   Current Points
@@ -359,21 +355,19 @@ export function WaitlistModal({
                     No tasks available yet.
                   </p>
                 ) : (
-                  <ScrollArea className="min-h-0 flex-1 pr-4">
-                    <div className="space-y-4">
-                      {tasks.map((task) => (
-                        <TaskItem
-                          key={task.id}
-                          task={task}
-                          hasOpenedTask={openedTaskIds.includes(task.id)}
-                          isCompleted={completedTaskIds.includes(task.id)}
-                          isSubmitting={isSubmitting}
-                          onOpenTask={openTaskLink}
-                          onVerifyTask={toggleTask}
-                        />
-                      ))}
-                    </div>
-                  </ScrollArea>
+                  <div className="space-y-4">
+                    {tasks.map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        hasOpenedTask={openedTaskIds.includes(task.id)}
+                        isCompleted={completedTaskIds.includes(task.id)}
+                        isSubmitting={isSubmitting}
+                        onOpenTask={openTaskLink}
+                        onVerifyTask={toggleTask}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
 
