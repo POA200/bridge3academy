@@ -1,7 +1,43 @@
 import { PrismaClient } from "@prisma/client"
-import { existsSync, readdirSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+
+function loadDatabaseUrlFromEnvFiles() {
+  if (process.env.DATABASE_URL) {
+    return
+  }
+
+  const currentDir = dirname(fileURLToPath(import.meta.url))
+  const candidates = [
+    join(process.cwd(), ".env.local"),
+    join(process.cwd(), ".env"),
+    join(currentDir, "..", "..", ".env.local"),
+    join(currentDir, "..", "..", ".env"),
+  ]
+
+  for (const filePath of candidates) {
+    if (!existsSync(filePath)) {
+      continue
+    }
+
+    const content = readFileSync(filePath, "utf8")
+    const match = content.match(/^DATABASE_URL\s*=\s*(["']?)(.+)\1\s*$/m)
+
+    if (!match) {
+      continue
+    }
+
+    const value = match[2]?.trim()
+
+    if (value) {
+      process.env.DATABASE_URL = value
+      return
+    }
+  }
+}
+
+loadDatabaseUrlFromEnvFiles()
 
 function resolveQueryEngineLibraryPath() {
   const currentDir = dirname(fileURLToPath(import.meta.url))

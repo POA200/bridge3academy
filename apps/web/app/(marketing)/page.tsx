@@ -5,17 +5,19 @@ import { Hero } from "../../components/sections/hero";
 import { HowItWorks } from "../../components/sections/how-it-works";
 import { Testimonials } from "../../components/sections/testimonials";
 import { Tracks } from "../../components/sections/tracks";
+import { getTestimonials } from "@/lib/data/testimonials";
 import { getWaitlistTasks } from "@/lib/data/waitlist-tasks";
 
 export default async function MarketingPage() {
   const tasks = await getWaitlistTasks();
+  const testimonials = await getTestimonials();
 
   return (
     <main>
       <Hero tasks={tasks} />
       <HowItWorks />
       <Curriculum />
-      <Testimonials />
+      <Testimonials testimonials={testimonials} />
       <Tracks />
       <FAQ />
       <CTA />
