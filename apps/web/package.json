@@ -14,6 +14,7 @@
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@repo/db": "*",
     "@repo/ui": "*",
+    "@vercel/analytics": "^2.0.1",
     "lucide-react": "^0.575.0",
     "next": "16.1.5",
     "react": "^19.2.0",
